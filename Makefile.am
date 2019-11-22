@@ -646,6 +646,7 @@ if ENABLE_UNITTESTS
         libnetdata/storage_number/tests/storage_number_testdriver \
         web/api/tests/web_api_testdriver \
         web/api/tests/valid_urls_testdriver \
+        web/api/tests/tokens_testdriver \
         $(NULL)
 
     TESTS = $(check_PROGRAMS)
@@ -673,6 +674,15 @@ if ENABLE_UNITTESTS
         $(LIBNETDATA_FILES) \
         $(NULL)
     web_api_tests_valid_urls_testdriver_LDADD = $(NETDATA_COMMON_LIBS) $(TEST_LIBS)
+
+    web_api_tests_tokens_testdriver_LDFLAGS = \
+        $(NULL)
+    web_api_tests_tokens_testdriver_SOURCES = \
+        web/api/tests/tokens.c \
+        web/server/web_client.c \
+        $(LIBNETDATA_FILES) \
+        $(NULL)
+    web_api_tests_tokens_testdriver_LDADD = $(NETDATA_COMMON_LIBS) $(TEST_LIBS)
 
     web_api_tests_web_api_testdriver_LDFLAGS = \
         -Wl,--wrap=rrdhost_find_by_hostname \
