@@ -315,5 +315,6 @@ extern char *netdata_configured_host_prefix;
 #include "json/json.h"
 #include "health/health.h"
 #include "string/utf8.h"
+#include "string/tokens.h"
 
 #endif // NETDATA_LIB_H

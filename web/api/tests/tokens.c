@@ -4,6 +4,7 @@
 #include "../../../libnetdata/required_dummies.h"
 #include "../../../database/rrd.h"
 #include "../../../web/server/web_client.h"
+
 #include <setjmp.h>
 #include <cmocka.h>
 #include <stdbool.h>
@@ -69,13 +70,13 @@ static void destroy_web_client(struct web_client *w)
 
 //////////////////////////// Test cases ///////////////////////////////////////////////////////////////////////////////
 
-static void only_root(void **state)
+static void simple_lines(void **state)
 {
     (void)state;
 
     struct token tokens[5];
     const char *text = "Some text\nwith line\nbreaks";
-    int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0);
+    int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
 
     for(int i=0; i<n; i++)
         printf("Start %d End %d\n",tokens[i].start, tokens[i].end);

@@ -679,7 +679,7 @@ if ENABLE_UNITTESTS
         $(NULL)
     web_api_tests_tokens_testdriver_SOURCES = \
         web/api/tests/tokens.c \
-        web/server/web_client.c \
+        libnetdata/string/tokens.c \
         $(LIBNETDATA_FILES) \
         $(NULL)
     web_api_tests_tokens_testdriver_LDADD = $(NETDATA_COMMON_LIBS) $(TEST_LIBS)
