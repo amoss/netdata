@@ -79,7 +79,8 @@ static void simple_lines(void **state)
     int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
 
     for(int i=0; i<n; i++)
-        printf("Start %d End %d\n",tokens[i].start, tokens[i].end);
+        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+               text + tokens[i].start);
 }
 
 
