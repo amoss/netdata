@@ -176,6 +176,35 @@ static void empty_many(void **state)
     }
 }
 
+static void fill_buffer(void **state)
+{
+    (void)state;
+
+    struct token tokens[5];
+    const char *text = "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7";
+    int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
+
+    for (int i = 0; i < n; i++)
+        printf(
+            "Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            text + tokens[i].start);
+
+    assert_int_equal(n, 5);
+    for (int i = 0; i < 4; i++) {
+        assert_int_equal(tokens[i].start, i*7);
+        assert_int_equal(tokens[i].end, i*7+5);
+    }
+
+    // NOTE: that extra +1 in the interface is a little awkward. Thought required...
+    n = tokenize(tokens, sizeof(tokens), text, strlen(text), tokens[4].end+2, "\n");
+    for (int i = 0; i < n; i++)
+        printf(
+            "Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            text + tokens[i].start);
+    assert_int_equal(n, 2);
+
+}
+
 int main(void)
 {
     debug_flags = 0xffffffffffff;
@@ -183,7 +212,7 @@ int main(void)
 
     struct CMUnitTest static_tests[] = { cmocka_unit_test(simple_lines), cmocka_unit_test(empty_line),
                                          cmocka_unit_test(empty_start), cmocka_unit_test(empty_end),
-                                         cmocka_unit_test(empty_many) };
+                                         cmocka_unit_test(empty_many), cmocka_unit_test(fill_buffer) };
 
     fails += cmocka_run_group_tests_name("static_tests", static_tests, NULL, NULL);
     return fails;
