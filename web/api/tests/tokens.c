@@ -34,7 +34,6 @@ void repr(char *result, int result_size, char const *buf, int size)
 
 // ---------------------------------- Mocking accesses from web_client ------------------------------------------------
 
-
 WEB_SERVER_MODE web_server_mode = WEB_SERVER_MODE_STATIC_THREADED;
 char *netdata_configured_web_dir = "UNKNOWN FIXME";
 RRDHOST *localhost = NULL;
@@ -78,17 +77,18 @@ static void simple_lines(void **state)
     const char *text = "Some text\nwith line\nbreaks";
     int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
 
-    for(int i=0; i<n; i++)
-        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
-               text + tokens[i].start);
+    for (int i = 0; i < n; i++)
+        printf(
+            "Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            text + tokens[i].start);
 
-    assert_int_equal(n,3);
-    assert_int_equal(tokens[0].start,0);
-    assert_int_equal(tokens[0].end,8);
-    assert_int_equal(tokens[1].start,10);
-    assert_int_equal(tokens[1].end,18);
-    assert_int_equal(tokens[2].start,20);
-    assert_int_equal(tokens[2].end,25);
+    assert_int_equal(n, 3);
+    assert_int_equal(tokens[0].start, 0);
+    assert_int_equal(tokens[0].end, 8);
+    assert_int_equal(tokens[1].start, 10);
+    assert_int_equal(tokens[1].end, 18);
+    assert_int_equal(tokens[2].start, 20);
+    assert_int_equal(tokens[2].end, 25);
 }
 
 static void empty_line(void **state)
@@ -99,17 +99,18 @@ static void empty_line(void **state)
     const char *text = "Some text\n\nbreaks";
     int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
 
-    for(int i=0; i<n; i++)
-        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
-               text + tokens[i].start);
+    for (int i = 0; i < n; i++)
+        printf(
+            "Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            text + tokens[i].start);
 
-    assert_int_equal(n,3);
-    assert_int_equal(tokens[0].start,0);
-    assert_int_equal(tokens[0].end,8);
+    assert_int_equal(n, 3);
+    assert_int_equal(tokens[0].start, 0);
+    assert_int_equal(tokens[0].end, 8);
     int token_empty = (tokens[1].end < tokens[1].start) ? 1 : 0;
-    assert_int_equal(token_empty,1);
-    assert_int_equal(tokens[2].start,11);
-    assert_int_equal(tokens[2].end,16);
+    assert_int_equal(token_empty, 1);
+    assert_int_equal(tokens[2].start, 11);
+    assert_int_equal(tokens[2].end, 16);
 }
 
 static void empty_start(void **state)
@@ -120,17 +121,17 @@ static void empty_start(void **state)
     const char *text = "\na single longer token at the end";
     int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
 
-    for(int i=0; i<n; i++)
-        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
-               text + tokens[i].start);
-
+    for (int i = 0; i < n; i++)
+        printf(
+            "Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            text + tokens[i].start);
 
     int token_empty = (tokens[0].end < tokens[0].start) ? 1 : 0;
-    assert_int_equal(n,2);
-    assert_int_equal(tokens[0].start,0);
-    assert_int_equal(token_empty,1);
-    assert_int_equal(tokens[1].start,1);
-    assert_int_equal(tokens[1].end,32);
+    assert_int_equal(n, 2);
+    assert_int_equal(tokens[0].start, 0);
+    assert_int_equal(token_empty, 1);
+    assert_int_equal(tokens[1].start, 1);
+    assert_int_equal(tokens[1].end, 32);
 }
 
 static void empty_end(void **state)
@@ -141,31 +142,48 @@ static void empty_end(void **state)
     const char *text = "a single longer token at the start\n";
     int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
 
-    for(int i=0; i<n; i++)
-        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
-               text + tokens[i].start);
+    for (int i = 0; i < n; i++)
+        printf(
+            "Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            text + tokens[i].start);
 
-
-    assert_int_equal(n,2);
-    assert_int_equal(tokens[0].start,0);
-    assert_int_equal(tokens[0].end,33);
-    assert_int_equal(tokens[1].start,35);
+    assert_int_equal(n, 2);
+    assert_int_equal(tokens[0].start, 0);
+    assert_int_equal(tokens[0].end, 33);
+    assert_int_equal(tokens[1].start, 35);
     int token_empty = (tokens[1].end < tokens[1].start) ? 1 : 0;
-    assert_int_equal(token_empty,1);
+    assert_int_equal(token_empty, 1);
 }
 
+static void empty_many(void **state)
+{
+    (void)state;
+
+    struct token tokens[5];
+    const char *text = "\n\n\n";
+    int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
+
+    for (int i = 0; i < n; i++)
+        printf(
+            "Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            text + tokens[i].start);
+
+    assert_int_equal(n, 4);
+    for (int i = 0; i < 4; i++) {
+        assert_int_equal(tokens[i].start, i);
+        int token_empty = (tokens[i].end < tokens[i].start) ? 1 : 0;
+        assert_int_equal(token_empty, 1);
+    }
+}
 
 int main(void)
 {
     debug_flags = 0xffffffffffff;
     int fails = 0;
 
-    struct CMUnitTest static_tests[] = {
-        cmocka_unit_test(simple_lines),
-        cmocka_unit_test(empty_line),
-        cmocka_unit_test(empty_start),
-        cmocka_unit_test(empty_end)
-    };
+    struct CMUnitTest static_tests[] = { cmocka_unit_test(simple_lines), cmocka_unit_test(empty_line),
+                                         cmocka_unit_test(empty_start), cmocka_unit_test(empty_end),
+                                         cmocka_unit_test(empty_many) };
 
     fails += cmocka_run_group_tests_name("static_tests", static_tests, NULL, NULL);
     return fails;
