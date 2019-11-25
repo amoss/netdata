@@ -13,7 +13,7 @@
  * This solves the issue of needing to pass two return values so that we can start on the next token
  * in the next call if the text was not fully split.
 */
-int tokenize(struct token *out_start, size_t out_size, char *in_start, size_t size, int offset,
+int tokenize(struct token *out_start, size_t out_size, const char *in_start, size_t size, int offset,
              const char * const delimitors) {
     char *in = in_start, *in_end = in_start + size;
     struct token *out_end = (struct token *)(((char *)out_start) + out_size);

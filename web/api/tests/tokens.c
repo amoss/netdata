@@ -81,6 +81,77 @@ static void simple_lines(void **state)
     for(int i=0; i<n; i++)
         printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
                text + tokens[i].start);
+
+    assert_int_equal(n,3);
+    assert_int_equal(tokens[0].start,0);
+    assert_int_equal(tokens[0].end,8);
+    assert_int_equal(tokens[1].start,10);
+    assert_int_equal(tokens[1].end,18);
+    assert_int_equal(tokens[2].start,20);
+    assert_int_equal(tokens[2].end,25);
+}
+
+static void empty_line(void **state)
+{
+    (void)state;
+
+    struct token tokens[5];
+    const char *text = "Some text\n\nbreaks";
+    int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
+
+    for(int i=0; i<n; i++)
+        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+               text + tokens[i].start);
+
+    assert_int_equal(n,3);
+    assert_int_equal(tokens[0].start,0);
+    assert_int_equal(tokens[0].end,8);
+    int token_empty = (tokens[1].end < tokens[1].start) ? 1 : 0;
+    assert_int_equal(token_empty,1);
+    assert_int_equal(tokens[2].start,11);
+    assert_int_equal(tokens[2].end,16);
+}
+
+static void empty_start(void **state)
+{
+    (void)state;
+
+    struct token tokens[5];
+    const char *text = "\na single longer token at the end";
+    int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
+
+    for(int i=0; i<n; i++)
+        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+               text + tokens[i].start);
+
+
+    int token_empty = (tokens[0].end < tokens[0].start) ? 1 : 0;
+    assert_int_equal(n,2);
+    assert_int_equal(tokens[0].start,0);
+    assert_int_equal(token_empty,1);
+    assert_int_equal(tokens[1].start,1);
+    assert_int_equal(tokens[1].end,32);
+}
+
+static void empty_end(void **state)
+{
+    (void)state;
+
+    struct token tokens[5];
+    const char *text = "a single longer token at the start\n";
+    int n = tokenize(tokens, sizeof(tokens), text, strlen(text), 0, "\n");
+
+    for(int i=0; i<n; i++)
+        printf("Start %d End %d ->%.*s<-\n",tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+               text + tokens[i].start);
+
+
+    assert_int_equal(n,2);
+    assert_int_equal(tokens[0].start,0);
+    assert_int_equal(tokens[0].end,33);
+    assert_int_equal(tokens[1].start,35);
+    int token_empty = (tokens[1].end < tokens[1].start) ? 1 : 0;
+    assert_int_equal(token_empty,1);
 }
 
 
@@ -90,7 +161,10 @@ int main(void)
     int fails = 0;
 
     struct CMUnitTest static_tests[] = {
-        cmocka_unit_test(simple_lines)
+        cmocka_unit_test(simple_lines),
+        cmocka_unit_test(empty_line),
+        cmocka_unit_test(empty_start),
+        cmocka_unit_test(empty_end)
     };
 
     fails += cmocka_run_group_tests_name("static_tests", static_tests, NULL, NULL);

@@ -5,5 +5,5 @@ struct token {
     int end;
 };
 
-int tokenize(struct token *out_start, size_t out_size, char *in_start, size_t size, int offset,
+int tokenize(struct token *out_start, size_t out_size, const char *in_start, size_t size, int offset,
              const char * const delimitors) ;
