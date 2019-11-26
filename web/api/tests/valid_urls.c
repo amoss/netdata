@@ -131,7 +131,7 @@ void __wrap_debug_int(const char *file, const char *function, const unsigned lon
     va_list args;
     va_start(args, fmt);
     printf("  DEBUG: ");
-    printf(fmt, args);
+    vprintf(fmt, args);
     printf("\n");
     va_end(args);
 }
@@ -144,7 +144,7 @@ void __wrap_info_int(const char *file, const char *function, const unsigned long
     va_list args;
     va_start(args, fmt);
     printf("  INFO: ");
-    printf(fmt, args);
+    vprintf(fmt, args);
     printf("\n");
     va_end(args);
 }
@@ -159,7 +159,7 @@ void __wrap_error_int(
     va_list args;
     va_start(args, fmt);
     printf("  ERROR: ");
-    printf(fmt, args);
+    vprintf(fmt, args);
     printf("\n");
     va_end(args);
 }
@@ -172,7 +172,7 @@ void __wrap_fatal_int(const char *file, const char *function, const unsigned lon
     va_list args;
     va_start(args, fmt);
     printf("FATAL: ");
-    printf(fmt, args);
+    vprintf(fmt, args);
     printf("\n");
     va_end(args);
     fail();

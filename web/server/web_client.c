@@ -1500,6 +1500,7 @@ void web_client_process_request(struct web_client *w) {
     int n = tokenize(tokens, sizeof(tokens), w->response.data->buffer, w->response.data->len,
                      w->next_parser_pos, "\n");
 
+    debug(D_WEB_CLIENT_ACCESS, "Hit %d tokens in %u bytes", n, w->response.data->len);
     buffer_flush(w->response.data);
     buffer_strcat(w->response.data, "Work in progress...\r\n");
     w->response.code = HTTP_RESP_BAD_REQUEST;
