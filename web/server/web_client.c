@@ -179,8 +179,10 @@ void web_client_request_done(struct web_client *w) {
     w->response.sent = 0;
     w->response.code = 0;
 
-    w->header_parse_tries = 0;
-    w->header_parse_last_size = 0;
+    w->next_parser_pos = 0;
+    w->processed_req_line = 0;
+    // AMOSS w->header_parse_tries = 0;
+    // AMOSS w->header_parse_last_size = 0;
 
     web_client_enable_wait_receive(w);
     web_client_disable_wait_send(w);
@@ -838,6 +840,8 @@ static inline char *web_client_valid_method(struct web_client *w, char *s) {
     else if(!strncmp(s, "STREAM ", 7)) {
         s = &s[7];
 
+/* AMOSS - build a passthrough
+
 #ifdef ENABLE_HTTPS
         if (w->ssl.flags && web_client_is_using_ssl_force(w)){
             w->header_parse_tries = 0;
@@ -867,6 +871,7 @@ static inline char *web_client_valid_method(struct web_client *w, char *s) {
             s = NULL;
         }
 #endif
+*/
 
         w->mode = WEB_CLIENT_MODE_STREAM;
     }
@@ -944,6 +949,7 @@ void web_client_split_path_query(struct web_client *w, char *s) {
  *          in the enum HTTP_VALIDATION otherwise.
  */
 static inline HTTP_VALIDATION http_request_validate(struct web_client *w) {
+/* AMOSS
     char *s = (char *)buffer_tostring(w->response.data), *encoded_url = NULL;
 
     size_t last_pos = w->header_parse_last_size;
@@ -1095,6 +1101,7 @@ static inline HTTP_VALIDATION http_request_validate(struct web_client *w) {
 
     // incomplete request
     web_client_enable_wait_receive(w);
+*/
     return HTTP_VALIDATION_INCOMPLETE;
 }
 
@@ -1487,14 +1494,19 @@ static inline int web_client_process_url(RRDHOST *host, struct web_client *w, ch
 
 
 
-/*
+
 void web_client_process_request(struct web_client *w) {
-    int n = tokenize(&tokens, sizeof(tokens), w->data.buffer, w->data.len, "\n");
+    struct token tokens[16];
+    int n = tokenize(tokens, sizeof(tokens), w->response.data->buffer, w->response.data->len,
+                     w->next_parser_pos, "\n");
 
+    buffer_flush(w->response.data);
+    buffer_strcat(w->response.data, "Work in progress...\r\n");
+    w->response.code = HTTP_RESP_BAD_REQUEST;
 }
-*/
 
 
+/* AMOSS
 void web_client_process_request(struct web_client *w) {
 
     // start timing us
@@ -1622,18 +1634,16 @@ void web_client_process_request(struct web_client *w) {
                 debug(D_WEB_CLIENT, "%llu: Done preparing the response. Will be sending data file of %zu bytes to client.", w->id, w->response.rlen);
                 web_client_enable_wait_receive(w);
 
-                /*
                 // utilize the kernel sendfile() for copying the file to the socket.
                 // this block of code can be commented, without anything missing.
                 // when it is commented, the program will copy the data using async I/O.
-                {
-                    long len = sendfile(w->ofd, w->ifd, NULL, w->response.data->rbytes);
-                    if(len != w->response.data->rbytes)
-                        error("%llu: sendfile() should copy %ld bytes, but copied %ld. Falling back to manual copy.", w->id, w->response.data->rbytes, len);
-                    else
-                        web_client_request_done(w);
-                }
-                */
+                //{
+                //    long len = sendfile(w->ofd, w->ifd, NULL, w->response.data->rbytes);
+                //    if(len != w->response.data->rbytes)
+                //        error("%llu: sendfile() should copy %ld bytes, but copied %ld. Falling back to manual copy.", w->id, w->response.data->rbytes, len);
+                //    else
+                //        web_client_request_done(w);
+                //}
             }
             else
                 debug(D_WEB_CLIENT, "%llu: Done preparing the response. Will be sending an unknown amount of bytes to client.", w->id);
@@ -1644,6 +1654,7 @@ void web_client_process_request(struct web_client *w) {
             break;
     }
 }
+*/
 
 ssize_t web_client_send_chunk_header(struct web_client *w, size_t len)
 {

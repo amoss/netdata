@@ -169,6 +169,8 @@ LIBNETDATA_FILES = \
     libnetdata/health/health.c \
     libnetdata/health/health.h \
     libnetdata/string/utf8.h \
+    libnetdata/string/tokens.c \
+    libnetdata/string/tokens.h \
     $(NULL)
 
 APPS_PLUGIN_FILES = \
@@ -679,7 +681,6 @@ if ENABLE_UNITTESTS
         $(NULL)
     web_api_tests_tokens_testdriver_SOURCES = \
         web/api/tests/tokens.c \
-        libnetdata/string/tokens.c \
         $(LIBNETDATA_FILES) \
         $(NULL)
     web_api_tests_tokens_testdriver_LDADD = $(NETDATA_COMMON_LIBS) $(TEST_LIBS)
