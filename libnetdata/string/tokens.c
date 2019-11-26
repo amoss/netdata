@@ -20,7 +20,7 @@ int tokenize(struct token *out_start, size_t out_size, const char *in_start, siz
     struct token *out = out_start;
     int num_delims = strlen(delimitors);
     out->start = offset;
-    while (out < out_end && in < in_end) {
+    while (out < out_end && in < in_end && *in != 0) {
         for (int i = 0; i < num_delims; i++) {
             if (*in == delimitors[i]) {
                 out->end = in - in_start - 1;      // Zero length tokens have end<start, ranges are inclusive

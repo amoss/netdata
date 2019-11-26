@@ -1501,6 +1501,24 @@ void web_client_process_request(struct web_client *w) {
                      w->next_parser_pos, "\n");
 
     debug(D_WEB_CLIENT_ACCESS, "Hit %d tokens in %u bytes", n, w->response.data->len);
+    for (int i = 0; i < n; i++) {
+        if (tokens[i].end < tokens[i].start) {
+            if (! w->processed_req_line)
+                continue;   // Skip empty lines before the request-line
+            else {
+                debug(D_WEB_CLIENT_ACCESS, "End of request");
+            }
+        }
+        else {
+            if (! w->processed_req_line) {
+                debug(D_WEB_CLIENT_ACCESS, "Request line @ %d-%d\n", tokens[i].start, tokens[i].end);
+                w->processed_req_line = 1;
+            }
+            
+        }
+    }
+
+
     buffer_flush(w->response.data);
     buffer_strcat(w->response.data, "Work in progress...\r\n");
     w->response.code = HTTP_RESP_BAD_REQUEST;
