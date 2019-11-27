@@ -1493,10 +1493,11 @@ static inline int web_client_process_url(RRDHOST *host, struct web_client *w, ch
 }
 
 
-void web_client_process_request_line(struct web_client *w, struct token *line)
+int web_client_process_request_line(struct web_client *w, struct token *line)
 {
     struct token tokens[8];
     int n = tokenize(tokens, sizeof(tokens), w->response.data->buffer, line->end + 1, line->start, " ");
+    //if 
     for (int i = 0; i < n; i++)
         printf(
             "Req-Line Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
@@ -1527,6 +1528,8 @@ void web_client_process_request(struct web_client *w) {
         }
     }
 
+
+    // ... if token_next < w->response.data->len then we need to continue tokenizing ...
 
     buffer_flush(w->response.data);
     buffer_strcat(w->response.data, "Work in progress...\r\n");

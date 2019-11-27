@@ -16,6 +16,8 @@
 int tokenize(struct token *out_start, size_t out_size, const char *in_start, size_t size, int offset,
              const char * const delimitors) {
     char *in = in_start + offset, *in_end = in_start + size;
+    if (in >= in_end)
+        return 0;
     struct token *out_end = (struct token *)(((char *)out_start) + out_size);
     struct token *out = out_start;
     int num_delims = strlen(delimitors);
@@ -41,5 +43,14 @@ int tokenize(struct token *out_start, size_t out_size, const char *in_start, siz
         out++;
     }
     return out - out_start;
+}
+
+// LTO should inline this across translation units, we cannot tag the prototype in the header as inline though because
+// it will break the build.
+inline int token_next(struct token *t)
+{
+    if (t->end < t->start)
+        return t->start + 1; // Empty token "starts" on the following delimitor / terminator.
+    return t->end + 2;
 }
 
