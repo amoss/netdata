@@ -1493,14 +1493,22 @@ static inline int web_client_process_url(RRDHOST *host, struct web_client *w, ch
 }
 
 
-
+void web_client_process_request_line(struct web_client *w, struct token *line)
+{
+    struct token tokens[8];
+    int n = tokenize(tokens, sizeof(tokens), w->response.data->buffer, line->end + 1, line->start, " ");
+    for (int i = 0; i < n; i++)
+        printf(
+            "Req-Line Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
+            w->response.data->buffer + tokens[i].start);
+}
 
 void web_client_process_request(struct web_client *w) {
     struct token tokens[16];
     int n = tokenize(tokens, sizeof(tokens), w->response.data->buffer, w->response.data->len,
                      w->next_parser_pos, "\n");
 
-    debug(D_WEB_CLIENT_ACCESS, "Hit %d tokens in %u bytes", n, w->response.data->len);
+    debug(D_WEB_CLIENT_ACCESS, "Hit %d tokens in %zu bytes", n, w->response.data->len);
     for (int i = 0; i < n; i++) {
         if (tokens[i].end < tokens[i].start) {
             if (! w->processed_req_line)
@@ -1512,6 +1520,7 @@ void web_client_process_request(struct web_client *w) {
         else {
             if (! w->processed_req_line) {
                 debug(D_WEB_CLIENT_ACCESS, "Request line @ %d-%d\n", tokens[i].start, tokens[i].end);
+                web_client_process_request_line(w, &tokens[i]);
                 w->processed_req_line = 1;
             }
             
