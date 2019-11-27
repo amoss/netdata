@@ -1497,7 +1497,18 @@ int web_client_process_request_line(struct web_client *w, struct token *line)
 {
     struct token tokens[8];
     int n = tokenize(tokens, sizeof(tokens), w->response.data->buffer, line->end + 1, line->start, " ");
-    //if 
+    // This cannot happen as empty lines do not arrive here.
+    if (n==0)
+        return HTTP_RESP_INTERNAL_SERVER_ERROR;
+    int method_len = tokens[0].end - tokens[0].start + 1;
+    if (method_len == 3 && !strncmp("GET", w->response.data->buffer + tokens[0].start, 3))
+        printf("GET\n");
+    else if (method_len == 7 && !strncmp("OPTIONS", w->response.data->buffer + tokens[0].start, 7))
+        printf("OPTIONS\n");
+    else if (method_len == 6 && !strncmp("STREAM", w->response.data->buffer + tokens[0].start, 6))
+        printf("STREAM\n");
+    else
+        return HTTP_RESP_BAD_REQUEST;
     for (int i = 0; i < n; i++)
         printf(
             "Req-Line Start %d End %d ->%.*s<-\n", tokens[i].start, tokens[i].end, tokens[i].end - tokens[i].start + 1,
@@ -1521,7 +1532,8 @@ void web_client_process_request(struct web_client *w) {
         else {
             if (! w->processed_req_line) {
                 debug(D_WEB_CLIENT_ACCESS, "Request line @ %d-%d\n", tokens[i].start, tokens[i].end);
-                web_client_process_request_line(w, &tokens[i]);
+                int resp = web_client_process_request_line(w, &tokens[i]);
+                printf("resp=%d\n",resp);
                 w->processed_req_line = 1;
             }
             
