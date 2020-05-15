@@ -1307,6 +1307,11 @@ void aclk_get_challenge(char *aclk_hostname, char *aclk_port)
     }
     if (aclk_password != NULL )
         freez(aclk_password);
+    if (aclk_username != NULL && strcmp(aclk_username, agent_id) != 0)
+    {
+        freez(aclk_username);
+        aclk_username = NULL;
+    }
     if (aclk_username == NULL)
         aclk_username = strdupz(agent_id);
     aclk_password = password.result;
@@ -1326,14 +1331,13 @@ static void aclk_try_to_connect(char *hostname, char *port, int port_num)
     aclk_get_challenge(hostname, port);
     if (aclk_password == NULL)
         return;
+    create_publish_base_topic();
     int rc;
     aclk_connecting = 1;
     rc = mqtt_attempt_connection(hostname, port_num, aclk_username, aclk_password);
     if (unlikely(rc)) {
         error("Failed to initialize the agent cloud link library");
     }
-    create_publish_base_topic();
-
 }
 
 
